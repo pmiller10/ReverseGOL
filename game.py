@@ -27,9 +27,18 @@ class Board:
             columns.append(column)
             start += 1
         self.columns = columns
+        self.cells = cells
 
     def mutate(self):
-        pass
+        """
+        Must set the next generation before mutating to it.
+        Otherwise, you'll get dynamic evolutions where the mutations
+        will vary based on which cells you started with.
+        """
+        for c in self.cells:
+            c.set_next_generation()
+        for c in self.cells:
+            c.mutate()
 
     def back(self):
         pass
@@ -37,7 +46,7 @@ class Board:
     def get(self, column, row):
         return self.columns[column][row]
 
-    def _neighbors(self, column, row):
+    def neighbors(self, column, row):
         """
         Return the 8 neighbors for a cell.
         Takes as input the row and column
@@ -54,6 +63,9 @@ class Board:
                     cell = self.get(c,r)
                     neighbors.append(cell)
         return neighbors
+
+    def __repr__(self):
+        return "\n".join([str(r) for r in self.rows])
         
 
 
@@ -61,20 +73,37 @@ class Cell:
 
     def __init__(self, alive, column, row, board):
         self.alive = alive
+        self.next_generation = alive
         self.board = board
         self.column = column
         self.row = row
 
     def neighbors(self):
-        return self.board._neighbors(self.column, self.row)
+        return self.board.neighbors(self.column, self.row)
+
+    def living_neighbors(self):
+        neighbors = self.neighbors()
+        count = 0
+        for n in neighbors:
+            if n.alive: count += 1
+        return count
+
+    def set_next_generation(self):
+        living = self.living_neighbors()
+        if self.alive:
+            if living <= 1:
+                self.next_generation = 0
+            elif living >= 4:
+                self.next_generation = 0
+        elif not self.alive:
+            if living >= 3:
+                self.next_generation = 1
+
+    def mutate(self):
+        self.alive = self.next_generation
 
     def __eq__(self, other):
         return self.alive == other
 
     def __repr__(self):
         return str(self.alive)
-
-    
-
-if __name__ == "__main__":
-    pass

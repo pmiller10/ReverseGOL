@@ -21,6 +21,14 @@ def test_cell():
     assert cell.neighbors() == [1, 0, 1, 1, 0]
     print 'test_cell pass'
 
+def test_mutate():
+    board.mutate()
+    assert board.cells == [0, 1, 0, 0, 1, 0] # generation 2
+    board.mutate()
+    assert board.cells == [0, 0, 0, 0, 0, 0] # generation 3
+    print 'test_mutate pass'
+
 if __name__ == "__main__":
     test_board()
     test_cell()
+    test_mutate()
