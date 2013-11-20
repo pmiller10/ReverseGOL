@@ -54,12 +54,16 @@ class Board:
         """
         neighbor_columns = [column-1, column, column+1]
         neighbor_rows = [row-1, row, row+1]
+
+        # make sure they don't exceed the boundaries of the board
+        neighbor_columns = [c for c in neighbor_columns if c >= 0 and c < self.width]
+        neighbor_rows = [r for r in neighbor_rows if r >= 0 and r < self.height]
+
         neighbors = []
         for c in neighbor_columns:
             for r in neighbor_rows:
-                # make sure it doesn't exceed the boundaries of the board
-                # and that it doesn't include the requested cell as a neighbor of itself
-                if c >= 0 and r >= 0 and c < self.width and r < self.height and not (c == column and r == row):
+                # make sure that it doesn't include the requested cell as a neighbor of itself
+                if not (c == column and r == row):
                     cell = self.get(c,r)
                     neighbors.append(cell)
         return neighbors
@@ -82,11 +86,10 @@ class Cell:
         return self.board.neighbors(self.column, self.row)
 
     def living_neighbors(self):
-        neighbors = self.neighbors()
-        count = 0
-        for n in neighbors:
-            if n.alive: count += 1
-        return count
+        living = 0
+        for n in self.neighbors():
+            if n.alive: living += 1
+        return living
 
     def set_next_generation(self):
         living = self.living_neighbors()
