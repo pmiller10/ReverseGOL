@@ -1,13 +1,13 @@
 class Board:
 
     def __init__(self, cells, height, width):
-        self.height, self.width = height, width
+        # convert integers to cell objects
+        cells = [Cell(c, None, None, self) for c in cells]
         total = height * width
         assert len(cells) == total
-        cells = [Cell(c, 0, 0, self) for c in cells]
-        rows, columns = [], []
 
         # populate the rows
+        rows = []
         pointer = 0
         for h in range(height):
             row = []
@@ -17,17 +17,20 @@ class Board:
                 row.append(cell)
                 pointer += 1
             rows.append(row)
-        self.rows = rows
 
         # populate the columns
+        columns = []
         start = 0
         for w in range(width):
             column = cells[start::width]
             for c in column: c.column = w
             columns.append(column)
             start += 1
+
+        self.rows = rows
         self.columns = columns
         self.cells = cells
+        self.height, self.width = height, width
 
     def mutate(self):
         """
